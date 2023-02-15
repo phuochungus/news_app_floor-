@@ -87,7 +87,7 @@ class NewsItem extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
-                    DateFormat('MMM dd, yyyy').format(news.modifiedAt!),
+                    DateFormat('MMM dd, yyyy').format(news.modifiedAt),
                     style: const TextStyle(
                       fontFamily: 'openSans',
                       fontStyle: FontStyle.italic,
