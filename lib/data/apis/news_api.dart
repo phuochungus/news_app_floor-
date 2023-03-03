@@ -1,12 +1,17 @@
 import 'package:dio/dio.dart';
+import 'package:news_app/local.dart';
 
 class NewsAPI {
-  final String _endpoint = 'http://3.91.70.32/intern/apis/news';
-  Future<List> getNewsOnPage(int page) async {
+  static const String _endpoint =
+      'https://newsapi.org/v2/everything?domains=wsj.com';
+  static Future<List> getNewsOnPage(int page) async {
     try {
-      var response = await Dio()
-          .get(_endpoint, queryParameters: {'page': page.toString()});
-      List listOfObject = response.data as List;
+      var response = await Dio().get(_endpoint, queryParameters: {
+        'apiKey': apiKey,
+        'pageSize': 20,
+        'page': 1,
+      });
+      List listOfObject = response.data['articles'] as List;
       return listOfObject;
     } catch (e) {
       rethrow;

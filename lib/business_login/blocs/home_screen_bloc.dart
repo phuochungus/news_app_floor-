@@ -21,23 +21,20 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
       HomeScreenEvent event, Emitter<HomeScreenState> emit) async {
     if (state.status != NewsStatus.initial) return;
     try {
-      print('retrieve');
-      // List<News> fetchedNews = await SqfliteHelper.getAllNews();
-      // totalNumberOfPage = fetchedNews.length ~/ 20;
+      print('news retrieving');
       var db = await getAppDB();
 
       List<News> fetchedNews = await db.getNewsDAO.retrieveAllNews();
-      var reversedList = fetchedNews;
       totalNumberOfPage = fetchedNews.length ~/ 20;
-      print('retrieved ${fetchedNews.length}');
-
+      if (fetchedNews.isEmpty) {
+        emit(state.copyWith(status: NewsStatus.failure));
+        return;
+      }
       emit(state.copyWith(
           status: NewsStatus.success,
-          newsGroup: List.of(state.newsGroup)..addAll(reversedList.toList()),
+          newsGroup: List.of(state.newsGroup)..addAll(fetchedNews.toList()),
           hasReachMax: false));
-      add(FetchNewsFromAPI());
     } catch (e) {
-      print(e);
       emit(state.copyWith(status: NewsStatus.failure));
     }
   }
@@ -45,18 +42,18 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   Future<void> _onNewsFetching(
       HomeScreenEvent event, Emitter<HomeScreenState> emit) async {
     if (state.hasReachMax) return;
-    if (state.status == NewsStatus.success) {
+    if (state.status == NewsStatus.success ||
+        state.status == NewsStatus.initial) {
       try {
-        print('will fetch page ${totalNumberOfPage + 1}');
         List<News> fetchedNews =
             await newsRepository.getNewsOnPage(totalNumberOfPage + 1);
 
         if (fetchedNews.isNotEmpty) {
           totalNumberOfPage++;
           var db = await getAppDB();
+          db.getNewsDAO.clearAllNews();
           db.getNewsDAO.insertAllNews(fetchedNews);
 
-          var t = await db.getNewsDAO.retrieveAllNews();
           if (numberOfFetchedNewsInJSON == -1) {
             numberOfFetchedNewsInJSON = fetchedNews.length;
           }
@@ -78,8 +75,7 @@ class HomeScreenBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
           ));
         }
       } catch (e) {
-        print(e);
-        emit(state.copyWith(status: NewsStatus.failure));
+        add(RetrieveNewsFromInternalDb());
       }
     }
   }

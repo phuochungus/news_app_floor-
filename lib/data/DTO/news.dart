@@ -7,45 +7,48 @@ class News extends Equatable {
   @PrimaryKey(autoGenerate: true)
   int? id;
 
-  @ColumnInfo(name: 'storyId')
-  final int storyId;
+  // @ColumnInfo(name: 'storyId')
+  // final int storyId;
 
   @ColumnInfo(name: 'title')
   final String title;
 
   @ColumnInfo(name: 'summary')
   final String summary;
+
   @ColumnInfo(name: 'modifiedAt')
   final DateTime modifiedAt;
+
   @ColumnInfo(name: 'imageUrl')
   final String imageUrl;
 
   News({
     this.id,
-    required this.storyId,
     required this.title,
     required this.summary,
     required this.modifiedAt,
     required this.imageUrl,
   });
 
-  News.fromAPIMap(Map<String, dynamic> json)
-      : storyId = json['storyId'],
-        title = json['title'],
-        summary = json['summary'],
-        modifiedAt = DateTime.parse(json['modifiedAt']),
-        imageUrl = json['image'];
+  News.fromNewsAPI(Map<String, dynamic> json)
+      : title = json['title'],
+        summary = json['description'],
+        modifiedAt = DateTime.parse(json['publishedAt']),
+        imageUrl = json['urlToImage'];
 
-  News copyWith(int storyId, String title, String summary, DateTime modifiedAt,
-      String imageUrl) {
+  News copyWith(
+      {String? title,
+      String? summary,
+      DateTime? modifiedAt,
+      String? imageUrl}) {
     return News(
-        storyId: storyId,
-        title: title,
-        summary: summary,
-        modifiedAt: modifiedAt,
-        imageUrl: imageUrl);
+      title: title ?? this.title,
+      summary: summary ?? this.summary,
+      modifiedAt: modifiedAt ?? this.modifiedAt,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
   }
 
   @override
-  List<Object?> get props => [storyId, title, summary, modifiedAt, imageUrl];
+  List<Object?> get props => [title, summary, modifiedAt, imageUrl];
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../data/DTO/news.dart';
+import '../../data/cache/cache_manager.dart';
 
 class NewsItem extends StatelessWidget {
   final News news;
-  const NewsItem(this.news);
+  const NewsItem(this.news, {super.key});
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -24,6 +26,7 @@ class NewsItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                     child: CachedNetworkImage(
                       imageUrl: news.imageUrl.toString(),
+                      cacheManager: CustomCacheManager.instance,
                       placeholder: (context, url) => const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: CircularProgressIndicator(),

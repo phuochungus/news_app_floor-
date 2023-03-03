@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import "package:flutter/services.dart";
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../business_login/blocs/home_screen_bloc.dart';
 import '../../business_login/blocs/home_screen_event.dart';
 import '../../business_login/blocs/home_screen_state.dart';
-import '../../data/DTO/news.dart';
 import '../../data/database/db.dart';
 import '../../data/repositories/news_repository.dart';
 import '../widgets/news_list_view.dart';
 
 class HomeScreen extends StatelessWidget {
-  List<News> newsGroup = List.empty();
-
   final _scrollController = ScrollController();
+
+  HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +26,9 @@ class HomeScreen extends StatelessWidget {
       child: BlocProvider(
         create: (context) =>
             HomeScreenBloc(RepositoryProvider.of<NewsRepository>(context))
-              ..add(RetrieveNewsFromInternalDb()),
+              ..add(FetchNewsFromAPI()),
         child: Scaffold(
-          drawer: NavigationDrawer(),
+          drawer: const NavigationDrawer(),
           appBar: AppBar(
             centerTitle: true,
             flexibleSpace: Container(
@@ -81,15 +81,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                         );
                       case NewsStatus.failure:
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(15, 15, 15, 15),
-                          child: NewsListView(
-                            _scrollController,
-                            state.newsGroup,
-                            state.hasReachMax,
-                            isError: true,
-                          ),
-                        );
+                        return const Text("error");
                     }
                   },
                 ),
@@ -104,7 +96,7 @@ class HomeScreen extends StatelessWidget {
 
 class CustomFAB extends StatelessWidget {
   final ScrollController _scrollController;
-  const CustomFAB(this._scrollController);
+  const CustomFAB(this._scrollController, {super.key});
 
   void _scrollUp() {
     _scrollController.animateTo(_scrollController.position.minScrollExtent,
@@ -142,6 +134,8 @@ class CustomFAB extends StatelessWidget {
 }
 
 class NavigationDrawer extends StatelessWidget {
+  const NavigationDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return const Drawer();

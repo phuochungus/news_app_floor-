@@ -85,7 +85,7 @@ class _$NewsDatabase extends NewsDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `News` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `storyId` INTEGER NOT NULL, `title` TEXT NOT NULL, `summary` TEXT NOT NULL, `modifiedAt` TEXT NOT NULL, `imageUrl` TEXT NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `News` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `summary` TEXT NOT NULL, `modifiedAt` TEXT NOT NULL, `imageUrl` TEXT NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -109,7 +109,6 @@ class _$NewsDAO extends NewsDAO {
             'News',
             (News item) => <String, Object?>{
                   'id': item.id,
-                  'storyId': item.storyId,
                   'title': item.title,
                   'summary': item.summary,
                   'modifiedAt': _dateTimeConverter.encode(item.modifiedAt),
@@ -129,7 +128,6 @@ class _$NewsDAO extends NewsDAO {
     return _queryAdapter.queryList('SELECT * FROM News',
         mapper: (Map<String, Object?> row) => News(
             id: row['id'] as int?,
-            storyId: row['storyId'] as int,
             title: row['title'] as String,
             summary: row['summary'] as String,
             modifiedAt: _dateTimeConverter.decode(row['modifiedAt'] as String),
